@@ -25,6 +25,7 @@
 				<li>
 					<label><span class="label-responsive"><?php esc_html_e( 'Authors:', 'openlab-import-export' ); ?></span>
 					<?php
+					add_filter( 'wp_dropdown_users', '\OpenLab\ImportExport\make_dropdown_multiple' );
 					wp_dropdown_users(
 						array(
 							'include'         => OpenLab\ImportExport\get_post_author_ids( 'post' ),
@@ -34,6 +35,7 @@
 							'show'            => 'display_name_with_login',
 						)
 					);
+					remove_filter( 'wp_dropdown_users', '\OpenLab\ImportExport\make_dropdown_multiple' );
 					?>
 					</label>
 				</li>
