@@ -6,6 +6,8 @@ use OpenLab\ImportExport\Contracts\Registerable;
 use OpenLab\ImportExport\Export\Service as ExportService;
 use OpenLab\ImportExport\Import\Service as ImportService;
 
+use OpenLab\ImportExport\ROOT_DIR;
+
 final class App {
 	const SERVICE_PROVIDERS = [
 		ExportService::class,
@@ -18,6 +20,8 @@ final class App {
 		if ( null === $instance ) {
 			$instance = new self();
 			$instance->register_services();
+
+			require ROOT_DIR . '/src/helpers.php';
 		}
 
 		return $instance;

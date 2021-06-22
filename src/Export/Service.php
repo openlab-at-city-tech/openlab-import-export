@@ -6,6 +6,8 @@
 namespace OpenLab\ImportExport\Export;
 
 use const OpenLab\ImportExport\ROOT_DIR;
+use const OpenLab\ImportExport\ROOT_FILE;
+
 use OpenLab\ImportExport\Contracts\Registerable;
 
 class Service implements Registerable {
@@ -17,6 +19,7 @@ class Service implements Registerable {
 	 */
 	public function register() {
 		add_action( 'admin_menu', [ $this, 'register_page' ] );
+		add_action( 'admin_print_scripts-tools_page_openlab_site_export', [ $this, 'enqueue_assets' ] );
 		add_action( 'admin_post_export-portfolio', [ $this, 'handle' ] );
 	}
 
@@ -31,9 +34,18 @@ class Service implements Registerable {
 			'OpenLab Export',
 			'OpenLab Export',
 			'export',
-			'site_export',
+			'openlab_site_export',
 			[ $this, 'render' ]
 		);
+	}
+
+	/**
+	 * Enqueues assets.
+	 *
+	 * @return void
+	 */
+	public function enqueue_assets() {
+		wp_enqueue_script( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/js/export.js', [ 'jquery' ], false, true );
 	}
 
 	/**
