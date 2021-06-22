@@ -1,13 +1,22 @@
-jQuery(document).ready(function($){
-	var form = $('#export-site'),
-		filters = form.find('.export-filters');
-	filters.hide();
-	form.find('input:radio').on( 'change', function() {
-		filters.slideUp('fast');
-		switch ( $(this).val() ) {
-			case 'attachment': $('#attachment-filters').slideDown(); break;
-			case 'posts': $('#post-filters').slideDown(); break;
-			case 'pages': $('#page-filters').slideDown(); break;
-		}
+(function($){
+	$(document).ready(function(){
+		var form = $('#export-site');
+
+		form.find('.export-filters').addClass( 'hide-options' );
+
+		form.find('.post-type-toggle').on( 'change', function() {
+			toggleOptions( $(this).val() );
+		});
 	});
-});
+
+	function toggleOptions( postType ) {
+		var $toggle = $( '.post-type-toggle[value="' + postType + '"]' );
+		var $toggleFilters = $( '#' + postType + '-filters' );
+
+		if ( $toggle.is( ':checked' ) ) {
+			$toggleFilters.removeClass( 'hide-options' );
+		} else {
+			$toggleFilters.addClass( 'hide-options' );
+		}
+	}
+}(jQuery));

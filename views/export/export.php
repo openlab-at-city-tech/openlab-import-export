@@ -11,11 +11,11 @@
 		<fieldset>
 			<legend class="screen-reader-text"><?php esc_html_e( 'Content to export', 'openlab-import-export' ); ?></legend>
 
-			<p><label><input type="radio" name="content" value="all" checked="checked" aria-describedby="all-content-desc" /> <?php esc_html_e( 'All content', 'openlab-import-export' ); ?></label></p>
+			<p><label><input type="checkbox" name="post-types[]" value="all"  aria-describedby="all-content-desc" /> <?php esc_html_e( 'All content', 'openlab-import-export' ); ?></label></p>
 			<p class="description" id="all-content-desc"><?php esc_html_e( 'Choosing &#8216;All content&#8217; will include all of your posts, pages, comments, custom fields, terms, navigation menus, and custom posts. Below you can limit what is included in the export.', 'openlab-import-export' ); ?></p>
 
 
-			<p><label><input type="radio" name="content" value="posts" /> <?php echo esc_html( _x( 'Posts', 'post type general name', 'openlab-import-export' ) ); ?></label></p>
+			<p><label><input class="post-type-toggle" type="checkbox" name="post-types[]" value="post" /> <?php echo esc_html( _x( 'Posts', 'post type general name', 'openlab-import-export' ) ); ?></label></p>
 			<ul id="post-filters" class="export-filters">
 				<li>
 					<label><span class="label-responsive"><?php esc_html_e( 'Categories:', 'openlab-import-export' ); ?></span>

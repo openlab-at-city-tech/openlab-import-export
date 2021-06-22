@@ -45,6 +45,7 @@ class Service implements Registerable {
 	 * @return void
 	 */
 	public function enqueue_assets() {
+		wp_enqueue_style( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/css/export.css' );
 		wp_enqueue_script( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/js/export.js', [ 'jquery' ], false, true );
 	}
 

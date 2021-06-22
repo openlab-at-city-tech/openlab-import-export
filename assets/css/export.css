@@ -1,0 +1,11 @@
+.hide-options {
+	display: none;
+}
+
+.wp-core-ui select[multiple]:hover {
+	color: inherit;
+}
+
+.wp-core-ui select[multiple] option:hover {
+	color: #2271b1;
+}
