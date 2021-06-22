@@ -1,12 +1,44 @@
 (function($){
 	$(document).ready(function(){
-		var form = $('#export-site');
+		var form = $( '#export-site' ),
+		  $allContent = $( '#all-content' ),
+			previouslyCheckedPostTypes = [];
 
-		form.find('.export-filters').addClass( 'hide-options' );
+		form.find( '.export-filters' ).addClass( 'hide-options' );
 
-		form.find('.post-type-toggle').on( 'change', function() {
+		form.find( '.post-type-toggle' ).on( 'change', function() {
 			toggleOptions( $(this).val() );
 		});
+
+		$allContent.on(
+			'change',
+			function() {
+				if ( $(this).is( ':checked' ) ) {
+					form.find( '.post-type-toggle:checked' ).each(
+						function() {
+							previouslyCheckedPostTypes.push( $(this).val() );
+						}
+					);
+					form.find( '.post-type-toggle' ).attr( 'checked', true ).attr( 'disabled', true );
+					form.find( '.export-filters' ).removeClass( 'hide-options' );
+				} else {
+					form.find( '.post-type-toggle' ).attr( 'checked', false ).attr( 'disabled', false );
+
+					previouslyCheckedPostTypes.forEach(
+						function( postType ) {
+							form.find( '.post-type-toggle[value="' + postType + '"]' ).attr( 'checked', true );
+						}
+					);
+					previouslyCheckedPostTypes = [];
+
+					form.find( '.post-type-toggle' ).each(
+						function() {
+							toggleOptions( $(this).val() );
+						}
+					);
+				}
+			}
+		);
 	});
 
 	function toggleOptions( postType ) {
