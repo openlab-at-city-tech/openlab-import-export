@@ -4,8 +4,6 @@
 		  $allContent = $( '#all-content' ),
 			previouslyCheckedPostTypes = [];
 
-		form.find( '.export-filters' ).addClass( 'hide-options' );
-
 		form.find( '.post-type-toggle' ).on( 'change', function() {
 			toggleOptions( $(this).val() );
 		});
@@ -19,14 +17,14 @@
 							previouslyCheckedPostTypes.push( $(this).val() );
 						}
 					);
-					form.find( '.post-type-toggle' ).attr( 'checked', true ).attr( 'disabled', true );
-					form.find( '.export-filters' ).removeClass( 'hide-options' );
+					form.find( '.post-type-toggle' ).prop( 'checked', true ).attr( 'disabled', true );
+					form.find( '.export-filters' ).addClass( 'show-options' );
 				} else {
-					form.find( '.post-type-toggle' ).attr( 'checked', false ).attr( 'disabled', false );
+					form.find( '.post-type-toggle' ).prop( 'checked', false ).attr( 'disabled', false );
 
 					previouslyCheckedPostTypes.forEach(
 						function( postType ) {
-							form.find( '.post-type-toggle[value="' + postType + '"]' ).attr( 'checked', true );
+							form.find( '.post-type-toggle[value="' + postType + '"]' ).prop( 'checked', true );
 						}
 					);
 					previouslyCheckedPostTypes = [];
@@ -46,9 +44,9 @@
 		var $toggleFilters = $( '#' + postType + '-filters' );
 
 		if ( $toggle.is( ':checked' ) ) {
-			$toggleFilters.removeClass( 'hide-options' );
+			$toggleFilters.addClass( 'show-options' );
 		} else {
-			$toggleFilters.addClass( 'hide-options' );
+			$toggleFilters.removeClass( 'show-options' );
 		}
 	}
 }(jQuery));

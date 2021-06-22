@@ -89,4 +89,16 @@ class Service implements Registerable {
 	public function render() {
 		require ROOT_DIR . '/views/export/export.php';
 	}
+
+	/**
+	 * Render view part.
+	 *
+	 * @param string $part Path to the view, relative to the views directory.
+	 * @param array  $args Arguments to make available to the template.
+	 *
+	 * @return void
+	 */
+	public static function render_view_part( $part, $args = [] ) {
+		require ROOT_DIR . '/views/' . $part;
+	}
 }

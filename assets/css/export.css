@@ -1,5 +1,9 @@
-.hide-options {
+body.js .export-filters {
 	display: none;
+}
+
+body.js .export-filters.show-options {
+	display: block;
 }
 
 .wp-core-ui select[multiple]:hover {
