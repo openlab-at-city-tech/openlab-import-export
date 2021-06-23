@@ -1,13 +1,13 @@
 <?php
 /**
- * Portfolio Exporter Class.
+ * Exporter Class.
  */
 
-namespace OpenLab\Portfolio\Export;
+namespace OpenLab\ImportExport\Export;
 
 use WP_Error;
 use ZipArchive;
-use OpenLab\Portfolio\Iterator\UploadsIterator;
+use OpenLab\ImportExport\Iterator\UploadsIterator;
 
 class Exporter {
 
@@ -17,6 +17,13 @@ class Exporter {
 	 * @var array
 	 */
 	protected $files = [];
+
+	/**
+	 * Post types and their options.
+	 *
+	 * @var array
+	 */
+	protected $post_types = [];
 
 	/**
 	 * Cached value of `wp_upload_dir()`.
@@ -70,6 +77,16 @@ class Exporter {
 		$this->prepare_files( $this->uploads_dir['basedir'] );
 
 		return $this->archive();
+	}
+
+	/**
+	 * Adds a post type to the list of those to be exported.
+	 *
+	 * @param string $post_type Post type.
+	 * @param array  $options
+	 */
+	public function add_post_type( $post_type, $options = [] ) {
+		$this->post_types[ $post_type ] = $options;
 	}
 
 	/**
@@ -128,6 +145,8 @@ class Exporter {
 	 */
 	protected function create_wxp() {
 		$wxp = new WXP( $this->exports_dir . 'wordpress.xml' );
+
+		$wxp->set_post_types( $this->post_types );
 
 		if ( ! $wxp->create() ) {
 			return new WP_Error(

@@ -3,7 +3,7 @@
  * Generates the WXR export file.
  */
 
-namespace OpenLab\Portfolio\Export;
+namespace OpenLab\ImportExport\Export;
 
 /**
  * Based on export_wxp().
@@ -16,6 +16,13 @@ class WXP {
 	 * WXP version.
 	 */
 	const VERSION = '1.2';
+
+	/**
+	 * Post types and their options.
+	 *
+	 * @var array
+	 */
+	protected $post_types = [];
 
 	/**
 	 * Exported WXP filename.
@@ -31,6 +38,15 @@ class WXP {
 	 */
 	public function __construct( $filename ) {
 		$this->filename = $filename;
+	}
+
+	/**
+	 * Set post types.
+	 *
+	 * @param array
+	 */
+	public function set_post_types( $post_types ) {
+		$this->post_types = $post_types;
 	}
 
 	/**
@@ -281,7 +297,7 @@ class WXP {
 
 		$post_ids = $this->get_post_ids();
 		if ( empty( $post_ids ) ) {
-			return fasle;
+			return false;
 		}
 
 		// Fetch 20 posts at a time rather than loading the entire table into memory.
@@ -369,15 +385,58 @@ class WXP {
 	protected function get_post_ids() {
 		global $wpdb;
 
-		$post_types = get_post_types( array( 'can_export' => true ) );
-		$esses      = array_fill( 0, count( $post_types ), '%s' );
-		$where      = $wpdb->prepare( "{$wpdb->posts}.post_type IN (" . implode( ',', $esses ) . ')', $post_types );
-		$where .= " AND {$wpdb->posts}.post_status != 'auto-draft'";
+		$post_ids = [];
+		if ( ! empty( $this->post_types ) ) {
+			foreach ( $this->post_types as $pt => $pt_options ) {
+				$ptype = get_post_type_object( $pt );
+				if ( ! $ptype->can_export ) {
+					continue;
+				}
 
-		// Grab a snapshot of post IDs, just in case it changes during the export.
-		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE $where" );
+				$where = $wpdb->prepare( "{$wpdb->posts}.post_type = %s", $pt );
 
-		return $post_ids;
+				if ( ! empty( $pt_options['status'] ) ) {
+					$where .= $wpdb->prepare( " AND post_status = %s", $pt_options['status'] );
+				} else {
+					$where .= " AND post_status != 'auto-draft'";
+				}
+
+				if ( ! empty( $pt_options['author'] ) ) {
+					$esses  = array_fill( 0, count( $pt_options['author'] ), '%d' );
+					$where  = $wpdb->prepare( "{$wpdb->posts}.post_author IN (" . implode( ',', $esses ) . ')', $pt_options['author'] );
+				}
+
+				if ( ! empty( $pt_options['start_date'] ) ) {
+					$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date >= %s", gmdate( 'Y-m-d', strtotime( $pt_options['start_date'] ) ) );
+				}
+
+				if ( ! empty( $pt_options['end_date'] ) ) {
+					$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date < %s", gmdate( 'Y-m-d', strtotime( '+1 month', strtotime( $pt_options['end_date'] ) ) ) );
+				}
+
+				$join = '';
+				if ( ! empty( $pt_options['category'] ) ) {
+					$term = term_exists( $pt_options['category'], 'category' );
+					if ( $term ) {
+						$join   = "INNER JOIN {$wpdb->term_relationships} ON ({$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id)";
+						$where .= $wpdb->prepare( " AND {$wpdb->term_relationships}.term_taxonomy_id = %d", $term['term_taxonomy_id'] );
+					}
+				}
+
+				$pt_post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} {$join} WHERE {$where}" );
+
+				$post_ids = array_merge( $post_ids, $pt_post_ids );
+			}
+		} else {
+			$post_types = get_post_types( array( 'can_export' => true ) );
+			$esses      = array_fill( 0, count( $post_types ), '%s' );
+			$where      = $wpdb->prepare( "{$wpdb->posts}.post_type IN (" . implode( ',', $esses ) . ')', $post_types );
+			$where     .= " AND {$wpdb->posts}.post_status != 'auto-draft'";
+
+			$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE $where" );
+		}
+
+		return array_map( 'intval', array_unique( $post_ids ) );
 	}
 
 	/**

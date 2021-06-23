@@ -16,7 +16,14 @@ $r = array_merge(
 		<?php if ( in_array( 'categories', $r['options'], true ) ) : ?>
 			<li>
 				<label><span class="label-responsive"><?php esc_html_e( 'Categories:', 'openlab-import-export' ); ?></span>
-				<?php wp_dropdown_categories( array( 'show_option_all' => __( 'All', 'openlab-import-export' ) ) ); ?>
+				<?php
+				wp_dropdown_categories(
+					[
+						'name'            => $r['post_type'] . '_cat',
+						'show_option_all' => __( 'All', 'openlab-import-export' )
+					]
+				);
+				?>
 				</label>
 			</li>
 		<?php endif; ?>
@@ -29,7 +36,7 @@ $r = array_merge(
 				wp_dropdown_users(
 					array(
 						'include'         => OpenLab\ImportExport\get_post_author_ids( $r['post_type'] ),
-						'name'            => $r['post_type'] . '_author',
+						'name'            => $r['post_type'] . '_author[]',
 						'multi'           => true,
 						'show_option_all' => __( 'All', 'openlab-import-export' ),
 						'show'            => 'display_name_with_login',

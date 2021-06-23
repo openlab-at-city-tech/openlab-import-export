@@ -85,7 +85,7 @@
 
 		<textarea class="widefat" name="readme-additional-text" id="readme-additional-text" aria-describedby="readme-description"></textarea>
 
-		<input type="hidden" name="action" value="export-portfolio" />
+		<input type="hidden" name="action" value="export-site" />
 
 		<?php wp_nonce_field( 'ol-export-site' ); ?>
 

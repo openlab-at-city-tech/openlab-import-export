@@ -20,7 +20,7 @@ class Service implements Registerable {
 	public function register() {
 		add_action( 'admin_menu', [ $this, 'register_page' ] );
 		add_action( 'admin_print_scripts-tools_page_openlab_site_export', [ $this, 'enqueue_assets' ] );
-		add_action( 'admin_post_export-portfolio', [ $this, 'handle' ] );
+		add_action( 'admin_post_export-site', [ $this, 'handle' ] );
 	}
 
 	/**
@@ -55,9 +55,34 @@ class Service implements Registerable {
 	 * @return void
 	 */
 	public function handle() {
-		check_admin_referer( 'ol-export-portfolio' );
+		check_admin_referer( 'ol-export-site' );
 
 		$exporter = new Exporter( wp_get_upload_dir() );
+
+		// @todo Support for 'all'.
+		$post_types = wp_unslash( $_POST['post-types'] );
+		foreach ( $post_types as $post_type ) {
+			$options = [];
+
+			if ( ! empty( $_POST[ $post_type . '_status' ] ) ) {
+				$options['status'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_status' ] ) );
+			}
+
+			if ( ! empty( $_POST[ $post_type . '_start_date' ] ) ) {
+				$options['start_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_start_date' ] ) );
+			}
+
+			if ( ! empty( $_POST[ $post_type . '_end_date' ] ) ) {
+				$options['end_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_end_date' ] ) );
+			}
+
+			if ( ! empty( $_POST[ $post_type . '_author' ] ) ) {
+				$options['author'] = array_map( 'intval', wp_unslash( $_POST[ $post_type . '_author' ] ) );
+			}
+
+			$exporter->add_post_type( $post_type, $options );
+		}
+
 		$filename = $exporter->run();
 
 		if ( is_wp_error( $filename ) ) {
