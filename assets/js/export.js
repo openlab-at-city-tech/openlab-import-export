@@ -18,7 +18,7 @@
 						}
 					);
 					form.find( '.post-type-toggle' ).prop( 'checked', true ).attr( 'disabled', true );
-					form.find( '.export-filters' ).addClass( 'show-options' );
+					form.find( '.export-filters' ).removeClass( 'show-options' );
 				} else {
 					form.find( '.post-type-toggle' ).prop( 'checked', false ).attr( 'disabled', false );
 
