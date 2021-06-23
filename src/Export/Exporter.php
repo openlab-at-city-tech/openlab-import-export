@@ -26,6 +26,13 @@ class Exporter {
 	protected $post_types = [];
 
 	/**
+	 * Text of the readme file.
+	 *
+	 * @var string
+	 */
+	protected $readme_text;
+
+	/**
 	 * Cached value of `wp_upload_dir()`.
 	 *
 	 * @var array
@@ -75,6 +82,8 @@ class Exporter {
 		}
 
 		$this->prepare_files( $this->uploads_dir['basedir'] );
+
+		$this->prepare_readme();
 
 		return $this->archive();
 	}
@@ -139,6 +148,84 @@ class Exporter {
 	}
 
 	/**
+	 * Generates the text of the readme file.
+	 *
+	 * @return void
+	 */
+	protected function prepare_readme() {
+		$admin_names = array_map(
+			function( $user ) {
+				return $user->display_name;
+			},
+			get_users( [ 'role' => 'administrator' ] )
+		);
+
+		$text = sprintf(
+			// translators: 1. Site name; 2. Site URL; 3. List of admin names
+			esc_html__( 'The source site for this export is: %1$s: %2$s created by %3$s', 'openlab-import-export' ),
+			get_option( 'blogname' ),
+			get_option( 'home' ),
+			implode( ', ', $admin_names )
+		);
+
+		$text .= "\n\n";
+		$text .= '# ' . esc_html__( 'Acknowledgements', 'openlab-import-export' );
+		$text .= "\n\n";
+
+		$source_site_name        = 'SOURCE SITE NAME';
+		$source_site_url         = 'SOURCE SITE URL';
+		$source_site_admin_names = 'SOURCE SITE ADMIN NAMES';
+
+		$text .= sprintf(
+			esc_html__( 'This site is based on [%s] (%s) by %s.
+
+Please be sure to display this information somewhere on your site.', 'openlab-import-export' ),
+			esc_html( $source_site_name ),
+			esc_html( $source_site_url ),
+			esc_html( $source_site_admin_names )
+		);
+
+		$text .= "\n\n";
+		$text .= '# ' . esc_html__( 'Themes and Plugins', 'openlab-import-export' );
+		$text .= "\n\n";
+
+		$text .= esc_html__( 'To best replicate the setup of that site, and to include any content types associated with its themes or plugins, activate the following themes and plugins on your site:', 'openlab-import-export' );
+
+		$active_theme = wp_get_theme( get_stylesheet() );
+
+		$text .= "\n\n";
+		$text .= sprintf(
+			'* %s: %s',
+			esc_html( $active_theme->name ),
+			esc_html( $active_theme->get( 'ThemeURI' ) )
+		);
+		$text .= "\n\n";
+
+		$all_plugins = get_plugins();
+		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+			if ( ! is_plugin_active( $plugin_file ) ) {
+				continue;
+			}
+
+			if ( ! empty( $plugin_data['PluginURI'] ) ) {
+				$text .= sprintf(
+					'* %s: %s',
+					esc_html( $plugin_data['Name'] ),
+					esc_html( $plugin_data['PluginURI'] )
+				);
+			} else {
+				$text .= sprintf(
+					'* %s',
+					esc_html( $plugin_data['Name'] ),
+				);
+			}
+			$text .= "\n";
+		}
+
+		$this->readme_text = $text;
+	}
+
+	/**
 	 * Create export WXP.
 	 *
 	 * @return \WP_Error|bool
@@ -191,6 +278,10 @@ class Exporter {
 		foreach ( $this->files as $file ) {
 			$zip->addFile( $file, $this->normalize_path( $file ) );
 		}
+
+		$readme_pathname = $this->exports_dir . 'readme.md';
+		file_put_contents( $readme_pathname, $this->readme_text );
+		$zip->addFile( $readme_pathname, 'readme.md' );
 
 		$zip->close();
 
