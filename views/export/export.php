@@ -77,6 +77,13 @@
 
 		</fieldset>
 
+		<h2><?php esc_html_e( 'Readme file', 'openlab-import-export' ); ?></h2>
+
+		<p id="readme-description"><?php esc_html_e( 'A readme text file will be included with the exported archive file. It will include information on how this archive file can be imported into another site. You can also include your own custom text in the box below.', 'openlab-import-export' ); ?></p>
+
+		<label for="readme-additional-text" class="screen-reader-text"><?php esc_html_e( 'Additional text for readme file', 'openlab-import-export' ); ?></label>
+
+		<textarea class="widefat" name="readme-additional-text" id="readme-additional-text" aria-describedby="readme-description"></textarea>
 
 		<input type="hidden" name="action" value="export-portfolio" />
 
