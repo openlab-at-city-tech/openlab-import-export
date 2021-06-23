@@ -18,9 +18,9 @@
 			<?php
 			/* Posts */
 			$post_type_args = [
-				'post_type'       => 'post',
-				'label'           => _x( 'Posts', 'post type general name', 'openlab-import-export' ),
-				'show_categories' => true,
+				'post_type' => 'post',
+				'label'     => _x( 'Posts', 'post type general name', 'openlab-import-export' ),
+				'options'   => [ 'categories', 'author', 'date', 'status' ],
 			];
 			OpenLab\ImportExport\Export\Service::render_view_part( 'export/post-type.php', $post_type_args );
 			?>
@@ -28,16 +28,60 @@
 			<?php
 			/* Pages */
 			$post_type_args = [
-				'post_type'       => 'page',
-				'label'           => __( 'Pages', 'openlab-import-export' ),
-				'show_categories' => false,
+				'post_type' => 'page',
+				'label'     => __( 'Pages', 'openlab-import-export' ),
+				'options'   => [ 'author', 'date', 'status' ],
 			];
 			OpenLab\ImportExport\Export\Service::render_view_part( 'export/post-type.php', $post_type_args );
 			?>
+
+			<?php
+			/* Menus */
+			$post_type_args = [
+				'post_type' => 'nav_menu_item',
+				'label'     => __( 'Menus', 'openlab-import-export' ),
+				'options'   => [],
+			];
+			OpenLab\ImportExport\Export\Service::render_view_part( 'export/post-type.php', $post_type_args );
+			?>
+
+			<?php
+			/* Media */
+			$post_type_args = [
+				'post_type' => 'attachment',
+				'label'     => __( 'Media', 'openlab-import-export' ),
+				'options'   => [ 'date' ],
+			];
+			OpenLab\ImportExport\Export\Service::render_view_part( 'export/post-type.php', $post_type_args );
+			?>
+
+			<?php
+			$other_post_types = get_post_types(
+				[
+					'_builtin'   => false,
+					'can_export' => true,
+				],
+				'objects'
+			);
+
+			foreach ( $other_post_types as $post_type ) {
+				$post_type_args = [
+					'post_type' => $post_type->name,
+					'label'     => $post_type->label,
+					'options'   => [],
+				];
+
+				OpenLab\ImportExport\Export\Service::render_view_part( 'export/post-type.php', $post_type_args );
+			}
+			?>
+
 		</fieldset>
 
+
 		<input type="hidden" name="action" value="export-portfolio" />
-		<?php wp_nonce_field( 'ol-export-portfolio' ); ?>
+
+		<?php wp_nonce_field( 'ol-export-site' ); ?>
+
 		<?php submit_button( __( 'Download Archive File', 'openlab-import-export' ) ); ?>
 	</form>
 </div>
