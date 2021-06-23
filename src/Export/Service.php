@@ -59,28 +59,30 @@ class Service implements Registerable {
 
 		$exporter = new Exporter( wp_get_upload_dir() );
 
-		// @todo Support for 'all'.
+		// 'all' falls through and is handled in WXP.
 		$post_types = wp_unslash( $_POST['post-types'] );
-		foreach ( $post_types as $post_type ) {
-			$options = [];
+		if ( ! in_array( 'all', $post_types, true ) ) {
+			foreach ( $post_types as $post_type ) {
+				$options = [];
 
-			if ( ! empty( $_POST[ $post_type . '_status' ] ) ) {
-				$options['status'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_status' ] ) );
+				if ( ! empty( $_POST[ $post_type . '_status' ] ) ) {
+					$options['status'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_status' ] ) );
+				}
+
+				if ( ! empty( $_POST[ $post_type . '_start_date' ] ) ) {
+					$options['start_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_start_date' ] ) );
+				}
+
+				if ( ! empty( $_POST[ $post_type . '_end_date' ] ) ) {
+					$options['end_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_end_date' ] ) );
+				}
+
+				if ( ! empty( $_POST[ $post_type . '_author' ] ) ) {
+					$options['author'] = array_map( 'intval', wp_unslash( $_POST[ $post_type . '_author' ] ) );
+				}
+
+				$exporter->add_post_type( $post_type, $options );
 			}
-
-			if ( ! empty( $_POST[ $post_type . '_start_date' ] ) ) {
-				$options['start_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_start_date' ] ) );
-			}
-
-			if ( ! empty( $_POST[ $post_type . '_end_date' ] ) ) {
-				$options['end_date'] = sanitize_text_field( wp_unslash( $_POST[ $post_type . '_end_date' ] ) );
-			}
-
-			if ( ! empty( $_POST[ $post_type . '_author' ] ) ) {
-				$options['author'] = array_map( 'intval', wp_unslash( $_POST[ $post_type . '_author' ] ) );
-			}
-
-			$exporter->add_post_type( $post_type, $options );
 		}
 
 		$filename = $exporter->run();
