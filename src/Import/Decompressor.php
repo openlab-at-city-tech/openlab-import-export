@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenLab\Portfolio\Import;
+namespace OpenLab\ImportExport\Import;
 
 use WP_Error;
 use ZipArchive;
@@ -76,7 +76,7 @@ class Decompressor {
 	 * @return bool
 	 */
 	public function cleanup() {
-		$filesystem = openlab_get_filesystem();
+		$filesystem = \OpenLab\ImportExport\openlab_get_filesystem();
 
 		wp_delete_attachment( $this->id );
 

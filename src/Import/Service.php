@@ -1,6 +1,6 @@
 <?php
 /**
- * Portfolio import settings.
+ * Site import settings.
  */
 
 namespace OpenLab\ImportExport\Import;
@@ -26,7 +26,7 @@ class Service implements Registerable {
 	 */
 	public function register() {
 		add_action( 'admin_menu', [ $this, 'register_page' ] );
-		add_action( 'wp_ajax_ol-portfolio-import', [ $this, 'stream_import' ] );
+		add_action( 'wp_ajax_openlab-import-export-import', [ $this, 'stream_import' ] );
 	}
 
 	/**
@@ -35,18 +35,12 @@ class Service implements Registerable {
 	 * @return void
 	 */
 	public function register_page() {
-		$type = openlab_get_site_type( get_current_blog_id() );
-
-		if ( 'portfolio' !== $type ) {
-			return;
-		}
-
 		add_submenu_page(
 			'tools.php',
-			'Import Portfolio',
-			'Import Portfolio',
+			__( 'OpenLab Import', 'openlab-import-export' ),
+			__( 'OpenLab Import', 'openlab-import-export' ),
 			'import',
-			'import_portfolio',
+			'openlab_import',
 			[ $this, 'render' ]
 		);
 	}
@@ -58,7 +52,7 @@ class Service implements Registerable {
 	 * @return string
 	 */
 	public function get_url( $step = 0 ) {
-		$path = 'admin.php?page=import_portfolio';
+		$path = 'admin.php?page=openlab_import';
 
 		if ( $step ) {
 			$path = add_query_arg( 'step', (int) $step, $path );
@@ -85,7 +79,7 @@ class Service implements Registerable {
 	 */
 	protected function enqueue_assets( $step = 0 ) {
 		wp_enqueue_style(
-			'ol-portfolio-import-styles',
+			'openlab-import-export-import-styles',
 			plugins_url( 'assets/css/import.css', ROOT_FILE ),
 			[],
 			'20190808'
@@ -96,21 +90,21 @@ class Service implements Registerable {
 		}
 
 		$args = [
-			'action' => 'ol-portfolio-import',
+			'action' => 'openlab-import-export-import',
 			'id'     => (int) $_POST['import_id'],
 		];
 
 		$script_data = [
-			'url' => add_query_arg( urlencode_deep( $args ), admin_url( 'admin-ajax.php' ) ),
+			'url'     => add_query_arg( urlencode_deep( $args ), admin_url( 'admin-ajax.php' ) ),
 			'strings' => [
-				'complete' => 'Step 3: Import Complete. Check out your site!',
-				'error'    => 'Import unsuccessful. <a href="https://openlab.citytech.cuny.edu/blog/help/contact-us/">Contact the OpenLab team</a> for support.',
+				'complete' => __( 'Step 3: Import Complete. Check out your site!', 'openlab-import-export' ),
+				'error'    => __( 'Import unsuccessful.', 'openlab-import-export' ),
 			],
 		];
 
 		$url = plugins_url( 'assets/js/import.js', ROOT_FILE );
-		wp_enqueue_script( 'ol-portfolio-import', $url, [ 'jquery' ], '20190723', true );
-		wp_localize_script( 'ol-portfolio-import', 'ImportData', $script_data );
+		wp_enqueue_script( 'openlab-import-export-import', $url, [ 'jquery' ], false, true );
+		wp_localize_script( 'openlab-import-export-import', 'ImportData', $script_data );
 	}
 
 	/**
@@ -184,7 +178,7 @@ class Service implements Registerable {
 			return;
 		}
 
-		check_admin_referer( sprintf( 'portfolio.import:%d', (int) $args['import_id'] ) );
+		check_admin_referer( sprintf( 'site.import:%d', (int) $args['import_id'] ) );
 
 		require ROOT_DIR . '/views/import/import.php';
 	}

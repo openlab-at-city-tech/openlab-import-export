@@ -6,11 +6,11 @@
  * @see https://github.com/humanmade/WordPress-Importer.
  */
 
-namespace OpenLab\Portfolio\Import;
+namespace OpenLab\ImportExport\Import;
 
 use WP_Error;
 use XMLReader;
-use OpenLab\Portfolio\Logger\Logger;
+use OpenLab\ImportExport\Logger\Logger;
 
 class Importer {
 	/**
