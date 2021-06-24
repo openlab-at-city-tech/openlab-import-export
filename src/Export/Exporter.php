@@ -33,6 +33,20 @@ class Exporter {
 	protected $readme_custom_text;
 
 	/**
+	 * Custom text for the auto-generated Acknowledgements page.
+	 *
+	 * @var string
+	 */
+	protected $acknowledgements_text;
+
+	/**
+	 * ID of the auto-generated Acknowledgements page.
+	 *
+	 * @var int
+	 */
+	protected $acknowledgements_page_id;
+
+	/**
 	 * Text of the readme file.
 	 *
 	 * @var string
@@ -83,10 +97,14 @@ class Exporter {
 			return $dest;
 		}
 
+		$this->create_acknowledgements_page();
+
 		$export = $this->create_wxp();
 		if ( is_wp_error( $export ) ) {
 			return $export;
 		}
+
+		$this->delete_acknowledgements_page();
 
 		$this->prepare_files( $this->uploads_dir['basedir'] );
 
@@ -117,6 +135,16 @@ class Exporter {
 	}
 
 	/**
+	 * Adds acknowledgements text for the auto-generated Acknowledgements page.
+	 *
+	 * @param string
+	 * @return void
+	 */
+	public function add_acknowledgements_text( $text ) {
+		$this->acknowledgements_text = $text;
+	}
+
+	/**
 	 * Create export destination.
 	 *
 	 * @return \WP_Error|bool
@@ -127,6 +155,50 @@ class Exporter {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Creates an Acknowledgements page to be included in the export.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return null
+	 */
+	protected function create_acknowledgements_page() {
+		if ( empty( $this->acknowledgements_text ) ) {
+			return;
+		}
+
+		$post_id = wp_insert_post(
+			[
+				'post_type'    => 'page',
+				'post_name'    => 'acknowledgements',
+				'post_status'  => 'publish',
+				'post_title'   => __( 'Acknowledgements', 'openlab-import-export' ),
+				'post_content' => $this->acknowledgements_text,
+			]
+		);
+
+		if ( ! $post_id || is_wp_error( $post_id ) ) {
+			return;
+		}
+
+		$this->acknowledgements_page_id = $post_id;
+	}
+
+	/**
+	 * Deletes the auto-generated Acknowledgements page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function delete_acknowledgements_page() {
+		if ( empty( $this->acknowledgements_page_id ) ) {
+			return;
+		}
+
+		wp_delete_post( $this->acknowledgements_page_id, true );
 	}
 
 	/**
@@ -171,12 +243,7 @@ class Exporter {
 	 * @return void
 	 */
 	protected function prepare_readme() {
-		$admin_names = array_map(
-			function( $user ) {
-				return $user->display_name;
-			},
-			get_users( [ 'role' => 'administrator' ] )
-		);
+		$admin_names = \OpenLab\ImportExport\get_site_admin_names();
 
 		$text = sprintf(
 			// translators: 1. Site name; 2. Site URL; 3. List of admin names
@@ -257,6 +324,7 @@ Please be sure to display this information somewhere on your site.', 'openlab-im
 		$wxp = new WXP( $this->exports_dir . 'wordpress.xml' );
 
 		$wxp->set_post_types( $this->post_types );
+		$wxp->set_acknowledgements_page_id( $this->acknowledgements_page_id );
 
 		if ( ! $wxp->create() ) {
 			return new WP_Error(

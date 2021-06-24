@@ -70,3 +70,42 @@ function export_date_options( $post_type = 'post' ) {
 function make_dropdown_multiple( $markup ) {
 	return str_replace( '<select ', '<select multiple ', $markup );
 };
+
+/**
+ * Gets the default Acknowledgements text.
+ *
+ * @since 1.0.0
+ *
+ * @return string
+ */
+function get_acknowledgements_text() {
+	$admin_names = get_site_admin_names();
+
+	return sprintf(
+		// translators: 1. Link to site; 2. List of admin names
+		esc_html__( 'This site is based on %1$s by %2$s.', 'openlab-import-export' ),
+		sprintf(
+			'<a href="%s">%s</a>',
+			esc_html( get_option( 'home' ) ),
+			esc_html( get_option( 'blogname' ) )
+		),
+		esc_html( implode( ', ', $admin_names ) )
+	);
+}
+
+/**
+ * Gets a list of names of administrators for the current site.
+ *
+ * @since 1.0.0
+ *
+ * @return array
+ */
+function get_site_admin_names() {
+	$admin_names = array_map(
+		function( $user ) {
+			return $user->display_name;
+		},
+		get_users( [ 'role' => 'administrator' ] )
+	);
+	return $admin_names;
+}

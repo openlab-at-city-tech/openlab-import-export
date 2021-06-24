@@ -90,6 +90,11 @@ class Service implements Registerable {
 			$exporter->add_readme_custom_text( $additional_text );
 		}
 
+		if ( ! empty( $_POST['acknowledgements-text'] ) ) {
+			$acknowledgements_text = wp_kses_post( wp_unslash( $_POST['acknowledgements-text'] ) );
+			$exporter->add_acknowledgements_text( $acknowledgements_text );
+		}
+
 		$filename = $exporter->run();
 
 		if ( is_wp_error( $filename ) ) {

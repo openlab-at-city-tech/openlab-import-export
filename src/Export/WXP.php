@@ -25,6 +25,13 @@ class WXP {
 	protected $post_types = [];
 
 	/**
+	 * ID of the auto-generated acknowledgements page.
+	 *
+	 * @var int
+	 */
+	protected $acknowledgements_page_id;
+
+	/**
 	 * Exported WXP filename.
 	 *
 	 * @var string
@@ -47,6 +54,17 @@ class WXP {
 	 */
 	public function set_post_types( $post_types ) {
 		$this->post_types = $post_types;
+	}
+
+	/**
+	 * Set post types.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int
+	 */
+	public function set_acknowledgements_page_id( $acknowledgements_page_id ) {
+		$this->acknowledgements_page_id = $acknowledgements_page_id;
 	}
 
 	/**
@@ -426,6 +444,11 @@ class WXP {
 				$pt_post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} {$join} WHERE {$where}" );
 
 				$post_ids = array_merge( $post_ids, $pt_post_ids );
+
+				// Always include the Acknowledgements page, even if 'page' is not a post type.
+				if ( ! empty( $this->acknowledgements_page_id ) ) {
+					$post_ids[] = $this->acknowledgements_page_id;
+				}
 			}
 		} else {
 			$post_types = get_post_types( array( 'can_export' => true ) );

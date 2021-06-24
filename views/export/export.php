@@ -85,6 +85,14 @@
 
 		<textarea class="widefat" name="readme-additional-text" id="readme-additional-text" aria-describedby="readme-description"></textarea>
 
+		<h2><?php esc_html_e( 'Acknowledgements', 'openlab-import-export' ); ?></h2>
+
+		<p id="acknowledgements-description"><?php esc_html_e( 'The text below will be included on an acknowledgments page which is added to the export file and will appear on any site that imports your site’s contents. You can edit the acknowledgments below, if necessary.', 'openlab-import-export' ); ?></p>
+
+		<label for="acknowledgements-text" class="screen-reader-text"><?php esc_html_e( 'Acknowledgments text', 'openlab-import-export' ); ?></label>
+
+		<textarea class="widefat" name="acknowledgements-text" id="acknowledgements-text" aria-describedby="acknowledgements-description"><?php echo esc_textarea( OpenLab\ImportExport\get_acknowledgements_text() ); ?></textarea>
+
 		<input type="hidden" name="action" value="export-site" />
 
 		<?php wp_nonce_field( 'ol-export-site' ); ?>
