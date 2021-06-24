@@ -85,6 +85,11 @@ class Service implements Registerable {
 			}
 		}
 
+		if ( ! empty( $_POST['readme-additional-text'] ) ) {
+			$additional_text = sanitize_textarea_field( wp_unslash( $_POST['readme-additional-text'] ) );
+			$exporter->add_readme_custom_text( $additional_text );
+		}
+
 		$filename = $exporter->run();
 
 		if ( is_wp_error( $filename ) ) {

@@ -26,6 +26,13 @@ class Exporter {
 	protected $post_types = [];
 
 	/**
+	 * Custom text to be appended to the readme file.
+	 *
+	 * @var string
+	 */
+	protected $readme_custom_text;
+
+	/**
 	 * Text of the readme file.
 	 *
 	 * @var string
@@ -93,9 +100,20 @@ class Exporter {
 	 *
 	 * @param string $post_type Post type.
 	 * @param array  $options
+	 * @return void
 	 */
 	public function add_post_type( $post_type, $options = [] ) {
 		$this->post_types[ $post_type ] = $options;
+	}
+
+	/**
+	 * Adds custom text for the end of the readme file.
+	 *
+	 * @param string
+	 * @return void
+	 */
+	public function add_readme_custom_text( $text ) {
+		$this->readme_custom_text = $text;
 	}
 
 	/**
@@ -221,6 +239,11 @@ Please be sure to display this information somewhere on your site.', 'openlab-im
 			}
 			$text .= "\n";
 		}
+
+		if ( ! empty( $this->readme_custom_text ) ) {
+			$text .= "\n";
+			$text .= $this->readme_custom_text;
+		};
 
 		$this->readme_text = $text;
 	}
