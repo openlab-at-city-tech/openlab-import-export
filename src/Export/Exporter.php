@@ -292,6 +292,10 @@ Please be sure to display this information somewhere on your site.', 'openlab-im
 				continue;
 			}
 
+			if ( is_plugin_active_for_network( $plugin_file ) ) {
+				continue;
+			}
+
 			if ( ! empty( $plugin_data['PluginURI'] ) ) {
 				$text .= sprintf(
 					'* %s: %s',
