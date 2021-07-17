@@ -279,11 +279,17 @@ class Exporter {
 				continue;
 			}
 
-			if ( ! empty( $plugin_data['PluginURI'] ) ) {
+			$plugin_uri = $this->get_download_uri( $plugin_file );
+
+			if ( ! $plugin_uri && ! empty( $plugin_data['PluginURI'] ) ) {
+				$plugin_uri = $plugin_data['PluginURI'];
+			}
+
+			if ( ! empty( $plugin_uri ) ) {
 				$text .= sprintf(
 					'* %s: %s',
 					esc_html( $plugin_data['Name'] ),
-					esc_html( $plugin_data['PluginURI'] )
+					esc_html( $plugin_uri )
 				);
 			} else {
 				$text .= sprintf(
@@ -300,6 +306,40 @@ class Exporter {
 		};
 
 		$this->readme_text = $text;
+	}
+
+	/**
+	 * Gets a wordpress.org download URI for a plugin file.
+	 *
+	 * @param string $plugin_file
+	 */
+	protected function get_download_uri( $plugin_file ) {
+		$cached = get_transient( 'download_uri_' . $plugin_file );
+		if ( $cached ) {
+			return $cached;
+		}
+
+		$pf_parts    = explode( '/', $plugin_file );
+		$plugin_slug = $pf_parts[0];
+
+		$response = wp_remote_post(
+			"http://api.wordpress.org/plugins/info/1.0/$plugin_slug.xml",
+			[
+				'body' => [
+					'action' => 'plugin_information',
+				],
+			]
+		);
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			$link = '';
+		} else {
+			$link = "https://wordpress.org/plugins/$plugin_slug";
+		}
+
+		set_transient( 'download_uri_' . $plugin_file, $link, DAY_IN_SECONDS );
+
+		return $link;
 	}
 
 	/**
