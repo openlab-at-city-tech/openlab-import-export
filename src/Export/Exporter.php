@@ -245,32 +245,15 @@ class Exporter {
 	protected function prepare_readme() {
 		$admin_names = \OpenLab\ImportExport\get_site_admin_names();
 
-		$text = sprintf(
-			// translators: 1. Site name; 2. Site URL; 3. List of admin names
-			esc_html__( 'The source site for this export is: %1$s: %2$s created by %3$s', 'openlab-import-export' ),
-			get_option( 'blogname' ),
-			get_option( 'home' ),
-			implode( ', ', $admin_names )
-		);
+		$text = esc_html__( 'Acknowledgements', 'openlab-import-export' );
+
+		$converter = new \League\HTMLToMarkdown\HtmlConverter();
 
 		$text .= "\n\n";
-		$text .= '# ' . esc_html__( 'Acknowledgements', 'openlab-import-export' );
-		$text .= "\n\n";
-
-		$source_site_name        = 'SOURCE SITE NAME';
-		$source_site_url         = 'SOURCE SITE URL';
-		$source_site_admin_names = 'SOURCE SITE ADMIN NAMES';
-
-		$text .= sprintf(
-			esc_html__( 'This site is based on [%s] (%s) by %s.
-
-Please be sure to display this information somewhere on your site.', 'openlab-import-export' ),
-			esc_html( $source_site_name ),
-			esc_html( $source_site_url ),
-			esc_html( $source_site_admin_names )
-		);
+		$text .= $converter->convert( $this->acknowledgements_text );
 
 		$text .= "\n\n";
+
 		$text .= '# ' . esc_html__( 'Themes and Plugins', 'openlab-import-export' );
 		$text .= "\n\n";
 

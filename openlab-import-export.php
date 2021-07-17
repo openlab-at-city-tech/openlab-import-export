@@ -11,6 +11,8 @@ namespace OpenLab\ImportExport;
 const ROOT_DIR  = __DIR__;
 const ROOT_FILE = __FILE__;
 
+require 'vendor/autoload.php';
+
 spl_autoload_register(
 	function( $class ) {
 		$prefix   = 'OpenLab\\ImportExport\\';

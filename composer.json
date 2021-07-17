@@ -1,0 +1,7 @@
+{
+    "name": "openlab/import-export",
+    "type": "project",
+    "require": {
+        "league/html-to-markdown": "^5.0"
+    }
+}
