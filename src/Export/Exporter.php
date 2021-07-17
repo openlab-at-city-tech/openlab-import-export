@@ -261,11 +261,16 @@ class Exporter {
 
 		$active_theme = wp_get_theme( get_stylesheet() );
 
+		$theme_uri = $this->get_theme_uri( get_stylesheet() );
+		if ( ! $theme_uri ) {
+			$theme_uri = $active_theme->get( 'ThemeURI' );
+		}
+
 		$text .= "\n\n";
 		$text .= sprintf(
 			'* %s: %s',
 			esc_html( $active_theme->name ),
-			esc_html( $active_theme->get( 'ThemeURI' ) )
+			esc_html( $theme_uri )
 		);
 		$text .= "\n\n";
 
@@ -279,8 +284,7 @@ class Exporter {
 				continue;
 			}
 
-			$plugin_uri = $this->get_download_uri( $plugin_file );
-
+			$plugin_uri = $this->get_plugin_uri( $plugin_file );
 			if ( ! $plugin_uri && ! empty( $plugin_data['PluginURI'] ) ) {
 				$plugin_uri = $plugin_data['PluginURI'];
 			}
@@ -313,20 +317,43 @@ class Exporter {
 	 *
 	 * @param string $plugin_file
 	 */
-	protected function get_download_uri( $plugin_file ) {
-		$cached = get_transient( 'download_uri_' . $plugin_file );
+	protected function get_plugin_uri( $plugin_file ) {
+		$pf_parts    = explode( '/', $plugin_file );
+		$plugin_slug = $pf_parts[0];
+
+		return $this->get_download_uri( $plugin_slug, 'plugins' );
+	}
+
+	/**
+	 * Gets a wordpress.org download URI for a theme.
+	 *
+	 * @param string $theme
+	 */
+	protected function get_theme_uri( $theme ) {
+		return $this->get_download_uri( $theme, 'themes' );
+	}
+
+	/**
+	 * Gets a wordpress.org download URI for a theme or plugin.
+	 *
+	 * @param string $slug
+	 * @param string $type 'plugins' or 'themes'.
+	 */
+	protected function get_download_uri( $slug, $type ) {
+		$cached = get_transient( 'download_uri_' . $slug );
 		if ( $cached ) {
 			return $cached;
 		}
 
-		$pf_parts    = explode( '/', $plugin_file );
-		$plugin_slug = $pf_parts[0];
+		if ( ! in_array( $type, [ 'plugins', 'themes' ], true ) ) {
+			return '';
+		}
 
 		$response = wp_remote_post(
-			"http://api.wordpress.org/plugins/info/1.0/$plugin_slug.xml",
+			"http://api.wordpress.org/$type/info/1.0/$slug.xml",
 			[
 				'body' => [
-					'action' => 'plugin_information',
+					'action' => 'plugins' === $type ? 'plugin_information' : 'theme_information',
 				],
 			]
 		);
@@ -334,10 +361,10 @@ class Exporter {
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			$link = '';
 		} else {
-			$link = "https://wordpress.org/plugins/$plugin_slug";
+			$link = "https://wordpress.org/$type/$slug";
 		}
 
-		set_transient( 'download_uri_' . $plugin_file, $link, DAY_IN_SECONDS );
+		set_transient( 'download_uri_' . $slug, $link, DAY_IN_SECONDS );
 
 		return $link;
 	}
