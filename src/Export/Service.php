@@ -60,7 +60,12 @@ class Service implements Registerable {
 		$exporter = new Exporter( wp_get_upload_dir() );
 
 		// 'all' falls through and is handled in WXP.
-		$post_types = wp_unslash( $_POST['post-types'] );
+		if ( isset( $_POST['post-types'] ) ) {
+			$post_types = wp_unslash( $_POST['post-types'] );
+		} else {
+			$post_types = [ 'all' ];
+		}
+
 		if ( ! in_array( 'all', $post_types, true ) ) {
 			foreach ( $post_types as $post_type ) {
 				$options = [];
