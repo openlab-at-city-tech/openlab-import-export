@@ -71,7 +71,7 @@ class Decompressor {
 	}
 
 	/**
-	 * Delete import attachement and extract dir..
+	 * Delete import attachement and extract dir.
 	 *
 	 * @return bool
 	 */
