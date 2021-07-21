@@ -252,6 +252,12 @@ class Exporter {
 		$text .= "\n\n";
 		$text .= $converter->convert( $this->acknowledgements_text );
 
+		if ( ! empty( $this->readme_custom_text ) ) {
+			$text .= "\n\n";
+			$text .= '# ' . esc_html__( 'Note from Exporter', 'openlab-import-export' );
+			$text .= $this->readme_custom_text;
+		};
+
 		$text .= "\n\n";
 
 		$text .= '# ' . esc_html__( 'Themes and Plugins', 'openlab-import-export' );
@@ -303,11 +309,6 @@ class Exporter {
 			}
 			$text .= "\n";
 		}
-
-		if ( ! empty( $this->readme_custom_text ) ) {
-			$text .= "\n";
-			$text .= $this->readme_custom_text;
-		};
 
 		$this->readme_text = $text;
 	}
