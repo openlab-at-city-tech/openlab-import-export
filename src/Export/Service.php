@@ -100,6 +100,7 @@ class Service implements Registerable {
 			$exporter->add_acknowledgements_text( $acknowledgements_text );
 		}
 
+		wp_ob_end_flush_all();
 		$filename = $exporter->run();
 
 		if ( is_wp_error( $filename ) ) {
