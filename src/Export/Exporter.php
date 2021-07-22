@@ -260,10 +260,10 @@ class Exporter {
 
 		$text .= "\n\n";
 
-		$text .= '# ' . esc_html__( 'Themes and Plugins', 'openlab-import-export' );
+		$text .= '# ' . esc_html__( 'Theme and Plugins', 'openlab-import-export' );
 		$text .= "\n\n";
 
-		$text .= esc_html__( 'To best replicate the setup of that site, and to include any content types associated with its themes or plugins, activate the following themes and plugins on your site:', 'openlab-import-export' );
+		$text .= esc_html__( 'To best replicate the setup of that site, and to include any content types associated with its theme or plugins, activate the following theme and plugins on your site:', 'openlab-import-export' );
 
 		$active_theme = wp_get_theme( get_stylesheet() );
 
