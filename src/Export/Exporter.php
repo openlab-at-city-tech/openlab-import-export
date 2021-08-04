@@ -255,6 +255,7 @@ class Exporter {
 		if ( ! empty( $this->readme_custom_text ) ) {
 			$text .= "\n\n";
 			$text .= '# ' . esc_html__( 'Note from Exporter', 'openlab-import-export' );
+			$text .= "\n\n";
 			$text .= $this->readme_custom_text;
 		};
 
