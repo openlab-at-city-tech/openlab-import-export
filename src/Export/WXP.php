@@ -366,6 +366,19 @@ class WXP {
 
 				$comments = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_approved <> 'spam'", $post->ID ) );
 				foreach ( $comments as $c ) {
+					// Exclude private or graded comments from wp-grade-comments.
+					$wpgc_grade   = get_comment_meta( $c->comment_ID, 'olgc_grade', true );
+					$wpgc_private = get_comment_meta( $c->comment_ID, 'olgc_is_private', true );
+					if ( $wpgc_grade || $wpgc_private ) {
+						continue;
+					}
+
+					// Exclude private comments from openlab-private-comments.
+					$olpc_private = get_comment_meta( $c->comment_ID, 'ol_is_private', true );
+					if ( $olpc_private ) {
+						continue;
+					}
+
 					$xml .= "\t\t<wp:comment>\n";
 					$xml .= "\t\t\t<wp:comment_id>" . $c->comment_ID . "</wp:comment_id>\n";
 					$xml .= "\t\t\t<wp:comment_author>" . $this->cdata( $c->comment_author ) . "</wp:comment_author>\n";
