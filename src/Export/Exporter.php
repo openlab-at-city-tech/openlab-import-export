@@ -261,10 +261,10 @@ class Exporter {
 
 		$text .= "\n\n";
 
-		$text .= '# ' . esc_html__( 'Theme and Plugins', 'openlab-import-export' );
+		$text .= '# ' . esc_html__( 'Theme, Plugins, and Menu', 'openlab-import-export' );
 		$text .= "\n\n";
 
-		$text .= esc_html__( 'To best replicate the setup of that site, and to include any content types associated with its theme or plugins, activate the following theme and plugins on your site:', 'openlab-import-export' );
+		$text .= esc_html__( 'The exported site uses the theme and plugins listed below. If you want your site to have the same appearance and features, you will need to install (if necessary) and activate the theme and plugins before you import.', 'openlab-import-export' );
 
 		$active_theme = wp_get_theme( get_stylesheet() );
 
@@ -274,12 +274,17 @@ class Exporter {
 		}
 
 		$text .= "\n\n";
+		$text .= esc_html__( 'Theme:', 'openlab-import-export' );
+		$text .= "\n";
 		$text .= sprintf(
 			'* %s: %s',
 			esc_html( $active_theme->name ),
 			esc_html( $theme_uri )
 		);
 		$text .= "\n\n";
+
+		$text .= esc_html__( 'Plugins:', 'openlab-import-export' );
+		$text .= "\n";
 
 		$all_plugins = get_plugins();
 		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
