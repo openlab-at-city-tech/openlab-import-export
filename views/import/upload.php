@@ -9,6 +9,7 @@
 
 		<label class="screen-reader-text" for="importzip"><?php esc_html_e( 'Import zip file', 'openlab-import-export' ); ?></label>
 		<input type="file" id="importzip" name="importzip" />
+		<div id="ol-import-error" class="ol-import-error"></div>
 
 		<?php submit_button( __( 'Upload Archive File', 'openlab-import-export' ) ); ?>
 	</form>

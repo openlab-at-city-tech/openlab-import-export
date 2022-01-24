@@ -34,4 +34,30 @@
 
 		jQuery('#import-log').append( row );
 	});
+
+	// Validate zip input.
+	$( '#importzip' ).on( 'change', function( el ) {
+		var theFile = el.target.files[0];
+		var error = '';
+
+		// File type.
+		if ( 'application/zip' !== theFile.type ) {
+			error = ImportData.strings.errorType;
+		}
+
+		if ( ! error ) {
+			var maxUploadSize = parseInt( ImportData.maxUploadSize );
+			if ( theFile.size > ImportData.maxUploadSize ) {
+				error = ImportData.strings.errorSize;
+			}
+		}
+
+		if ( error ) {
+			$( '#ol-import-error' ).html( error );
+			$( '#submit' ).prop( 'disabled', true );
+		} else {
+			$( '#ol-import-error' ).html( '' );
+			$( '#submit' ).prop( 'disabled', false );
+		}
+	} );
 })(jQuery);

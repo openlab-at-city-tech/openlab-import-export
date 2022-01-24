@@ -85,20 +85,24 @@ class Service implements Registerable {
 			'20190808'
 		);
 
-		if ( $step !== static::STEP_IMPORT ) {
-			return;
-		}
-
 		$args = [
 			'action' => 'openlab-import-export-import',
 			'id'     => (int) $_POST['import_id'],
 		];
 
+		$max_upload_size = wp_max_upload_size();
+
+		// Round up to nearest hundredth.
+		$max_upload_size_h = ( ceil( $max_upload_size / ( 1000 * 10 ) ) / 100 ) . ' MB';
+
 		$script_data = [
-			'url'     => add_query_arg( urlencode_deep( $args ), admin_url( 'admin-ajax.php' ) ),
-			'strings' => [
-				'complete' => __( 'Step 3: Import Complete. Check out your site!', 'openlab-import-export' ),
-				'error'    => __( 'Import unsuccessful.', 'openlab-import-export' ),
+			'url'           => add_query_arg( urlencode_deep( $args ), admin_url( 'admin-ajax.php' ) ),
+			'maxUploadSize' => $max_upload_size,
+			'strings'       => [
+				'complete'  => __( 'Step 3: Import Complete. Check out your site!', 'openlab-import-export' ),
+				'error'     => __( 'Import unsuccessful.', 'openlab-import-export' ),
+				'errorType' => __( 'Please select an OpenLab Archive file (.zip).', 'openlab-import-export' ),
+				'errorSize' => sprintf( __( 'File too large. Max upload size is %s.', 'openlab-import-export' ), $max_upload_size_h ),
 			],
 		];
 
