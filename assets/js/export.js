@@ -8,6 +8,8 @@
 			toggleOptions( $(this).val() );
 		});
 
+		$('.use-select2').select2().val(['0']).trigger('change');
+
 		$allContent.on(
 			'change',
 			function() {

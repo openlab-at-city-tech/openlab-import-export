@@ -29,12 +29,13 @@ $r = array_merge(
 		<?php endif; ?>
 
 		<?php if ( in_array( 'author', $r['options'], true ) ) : ?>
-			<li>
+			<li class="export-author">
 				<label><span class="label-responsive"><?php esc_html_e( 'Authors:', 'openlab-import-export' ); ?></span>
 				<?php
 				add_filter( 'wp_dropdown_users', '\OpenLab\ImportExport\make_dropdown_multiple' );
 				wp_dropdown_users(
 					array(
+						'class'           => 'use-select2 export-author-dropdown',
 						'include'         => OpenLab\ImportExport\get_post_author_ids( $r['post_type'] ),
 						'name'            => $r['post_type'] . '_author[]',
 						'multi'           => true,

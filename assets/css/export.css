@@ -13,3 +13,15 @@ body.js .export-filters.show-options {
 .wp-core-ui select[multiple] option:hover {
 	color: #2271b1;
 }
+
+.export-author-dropdown {
+	width: 400px;
+}
+
+.export-author .select2-container--default .select2-selection--multiple {
+	height: 32px;
+}
+
+.export-author .select2-container .select2-search--inline .select2-search__field {
+	margin-top: 0;
+}

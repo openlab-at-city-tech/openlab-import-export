@@ -45,8 +45,11 @@ class Service implements Registerable {
 	 * @return void
 	 */
 	public function enqueue_assets() {
-		wp_enqueue_style( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/css/export.css' );
-		wp_enqueue_script( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/js/export.js', [ 'jquery' ], false, true );
+		wp_register_style( 'openlab-import-export-select2', plugin_dir_url( ROOT_FILE ) . '/vendor/select2/select2/dist/css/select2.min.css' );
+		wp_register_script( 'openlab-import-export-select2', plugin_dir_url( ROOT_FILE ) . '/vendor/select2/select2/dist/js/select2.min.js', [ 'jquery' ], false, true );
+
+		wp_enqueue_style( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/css/export.css', [ 'openlab-import-export-select2' ] );
+		wp_enqueue_script( 'openlab-import-export-export', plugin_dir_url( ROOT_FILE ) . 'assets/js/export.js', [ 'jquery', 'openlab-import-export-select2' ], false, true );
 	}
 
 	/**

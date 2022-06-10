@@ -2,6 +2,7 @@
     "name": "openlab/import-export",
     "type": "project",
     "require": {
-        "league/html-to-markdown": "^5.0"
+        "league/html-to-markdown": "^5.0",
+        "select2/select2": "^4.0"
     }
 }
