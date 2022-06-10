@@ -1,4 +1,5 @@
 (function ($) {
+	var $uploadSubmitButton = $('input#upload-submit');
 	var evtSource = new EventSource( ImportData.url );
 
 	var updateImportStatus = function(data) {
@@ -54,10 +55,15 @@
 
 		if ( error ) {
 			$( '#ol-import-error' ).html( error );
-			$( '#submit' ).prop( 'disabled', true );
+			$uploadSubmitButton.prop( 'disabled', true );
 		} else {
 			$( '#ol-import-error' ).html( '' );
-			$( '#submit' ).prop( 'disabled', false );
+			$uploadSubmitButton.prop( 'disabled', false );
 		}
+	} );
+
+	$uploadSubmitButton.on( 'click', function( e ) {
+		$uploadSubmitButton.val( ImportData.strings.uploading ).attr( 'disabled', true );
+		$uploadSubmitButton.closest( 'form' ).submit();
 	} );
 })(jQuery);

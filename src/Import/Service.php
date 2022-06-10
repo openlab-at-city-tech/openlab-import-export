@@ -103,6 +103,7 @@ class Service implements Registerable {
 				'error'     => __( 'Import unsuccessful.', 'openlab-import-export' ),
 				'errorType' => __( 'Please select an OpenLab Archive file (.zip).', 'openlab-import-export' ),
 				'errorSize' => sprintf( __( 'File too large. Max upload size is %s.', 'openlab-import-export' ), $max_upload_size_h ),
+				'uploading' => __( 'Uploading...', 'openlab-import-export' ),
 			],
 		];
 
