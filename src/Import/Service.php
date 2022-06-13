@@ -166,6 +166,18 @@ class Service implements Registerable {
 			return;
 		}
 
+		$decompressor = new Decompressor( $this->id );
+		$extract_path = $decompressor->extract();
+
+		if ( is_wp_error( $extract_path ) ) {
+			$this->display_error( $extract_path->get_error_message() );
+			return;
+		}
+
+		update_post_meta( $this->id, 'extract_path', $extract_path );
+
+		$this->archive_has_attachments = file_exists( $extract_path . '/wp-content' );
+
 		require ROOT_DIR . '/views/import/settings.php';
 	}
 
@@ -183,13 +195,19 @@ class Service implements Registerable {
 			return;
 		}
 
-		check_admin_referer( sprintf( 'site.import:%d', (int) $args['import_id'] ) );
+		$import_id = (int) $args['import_id'];
+
+		$attachment_mode = ! empty( $args['archive-has-attachments'] ) ? 'archive' : 'skip';
+
+		update_post_meta( $import_id, 'attachment_mode', $attachment_mode );
+
+		check_admin_referer( sprintf( 'site.import:%d', $import_id ) );
 
 		require ROOT_DIR . '/views/import/import.php';
 	}
 
 	/**
-	 * Handles archvie upload.
+	 * Handles archive upload.
 	 *
 	 * @return WP_Error|bool
 	 */
@@ -248,24 +266,16 @@ class Service implements Registerable {
 		wp_ob_end_flush_all();
 		flush();
 
-		$decompressor = new Decompressor( $this->id );
-		$extract_path = $decompressor->extract();
-
-		if ( is_wp_error( $extract_path ) ) {
-			$this->emit_sse_message( [
-				'action' => 'complete',
-				'error'  => $extract_path->get_error_message(),
-			] );
-			exit;
-		}
+		$extract_path = get_post_meta( $this->id, 'extract_path', true );
 
 		// Skip processing author data.
 		add_filter( 'wxr_importer.pre_process.user', '__return_null' );
 
-		$importer = $this->get_importer( $extract_path );
+		$importer = $this->get_importer( $this->id );
 		$status   = $importer->import( $extract_path . '/wordpress.xml' );
 
 		// Clean up.
+		$decompressor = new Decompressor( $this->id );
 		$decompressor->cleanup();
 		unset( $this->id );
 
@@ -286,12 +296,15 @@ class Service implements Registerable {
 	/**
 	 * Get the importer instance.
 	 *
-	 * @param string $extract_path
+	 * @param string $archive_id
 	 * @return Importer
 	 */
-	protected function get_importer( $extract_path ) {
+	protected function get_importer( $archive_id ) {
+		$extract_path    = get_post_meta( $archive_id, 'extract_path', true );
+		$attachment_mode = get_post_meta( $archive_id, 'attachment_mode', true );
 		$options = [
 			'fetch_attachments'     => true,
+			'attachment_mode'       => $attachment_mode,
 			'aggressive_url_search' => true,
 			'default_author'        => get_current_user_id(),
 		];

@@ -116,6 +116,7 @@ class Importer {
 			'prefill_existing_comments' => true,
 			'prefill_existing_terms'    => true,
 			'update_attachment_guids'   => false,
+			'attachment_mode'           => 'remote',
 			'fetch_attachments'         => false,
 			'aggressive_url_search'     => false,
 			'default_author'            => null,
@@ -925,6 +926,75 @@ class Importer {
 	}
 
 	/**
+	 * Attempt to download a remote file attachment
+	 *
+	 * @param string $url URL of item to fetch
+	 * @param array $post Attachment details
+	 * @return array|WP_Error Local file location details on success, WP_Error otherwise
+	 */
+	protected function fetch_remote_file( $url, $post ) {
+		// extract the file name and extension from the url
+		$file_name = basename( $url );
+
+		// get placeholder file in the upload dir with a unique, sanitized filename
+		$upload = wp_upload_bits( $file_name, 0, '', $post['upload_date'] );
+		if ( $upload['error'] ) {
+			return new WP_Error( 'upload_dir_error', $upload['error'] );
+		}
+
+		// fetch the remote url and write it to the placeholder file
+		$response = wp_remote_get( $url, array(
+			'stream' => true,
+			'filename' => $upload['file'],
+		) );
+
+		// request failed
+		if ( is_wp_error( $response ) ) {
+			unlink( $upload['file'] );
+			return $response;
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+
+		// make sure the fetch was successful
+		if ( $code !== 200 ) {
+			unlink( $upload['file'] );
+			return new WP_Error(
+				'import_file_error',
+				sprintf(
+					__( 'Remote server returned %1$d %2$s for %3$s', 'wordpress-importer' ),
+					$code,
+					get_status_header_desc( $code ),
+					$url
+				)
+			);
+		}
+
+		$filesize = filesize( $upload['file'] );
+		$headers = wp_remote_retrieve_headers( $response );
+
+		if ( isset( $headers['content-length'] ) && $filesize !== (int) $headers['content-length'] ) {
+			unlink( $upload['file'] );
+			return new WP_Error( 'import_file_error', __( 'Remote file is incorrect size', 'wordpress-importer' ) );
+		}
+
+		if ( 0 === $filesize ) {
+			unlink( $upload['file'] );
+			return new WP_Error( 'import_file_error', __( 'Zero size file downloaded', 'wordpress-importer' ) );
+		}
+
+		$max_size = (int) $this->max_attachment_size();
+		if ( ! empty( $max_size ) && $filesize > $max_size ) {
+			unlink( $upload['file'] );
+			$message = sprintf( __( 'Remote file is too large, limit is %s', 'wordpress-importer' ), size_format( $max_size ) );
+			return new WP_Error( 'import_file_error', $message );
+		}
+
+		return $upload;
+	}
+
+
+	/**
 	 * If fetching attachments is enabled then attempt to create a new attachment
 	 *
 	 * @param array $post Attachment post details from WXR
@@ -955,7 +1025,12 @@ class Importer {
 			$remote_url = rtrim( $this->base_url, '/' ) . $remote_url;
 		}
 
-		$upload = $this->copy_local_file( $remote_url, $post );
+		if ( 'remote' === $this->options['attachment_mode'] ) {
+			$upload = $this->fetch_remote_file( $remote_url, $post );
+		} else {
+			$upload = $this->copy_local_file( $remote_url, $post );
+		}
+
 		if ( is_wp_error( $upload ) ) {
 			return $upload;
 		}
