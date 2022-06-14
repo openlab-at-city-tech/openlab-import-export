@@ -97,6 +97,69 @@
 
 		<?php wp_nonce_field( 'ol-export-site' ); ?>
 
-		<?php submit_button( __( 'Download Archive File', 'openlab-import-export' ) ); ?>
+		<h2><?php esc_html_e( 'Download Archive File', 'openlab-import-export' ); ?></h2>
+
+		<?php
+		$space_used = get_space_used();
+
+		$space_used_rounded = round( $space_used, 1 );
+
+		/**
+		 * Maximum recommended size for an exported attachments directory, in MB.
+		 *
+		 * @param int
+		 */
+		$max_recommended_size = apply_filters( 'openlab_import_export_max_recommended_size_for_exported_attachments', 10 );
+
+		$exceeds_max = $space_used > $max_recommended_size;
+
+		?>
+
+		<p><?php esc_html_e( 'Two versions of the archive file are available. You may choose to download one or both, depending on your needs.', 'openlab-import-export' ); ?></p>
+
+		<ul>
+			<li class="archive-download-type">
+				<div class="archive-download-type-button">
+					<?php
+					submit_button(
+						// translators: Approximate size of archive file, in MB.
+						sprintf( __( 'Download Archive with Attachments (~%s MB)', 'openlab-import-export' ), $space_used_rounded ),
+						'primary large',
+						'submit-with-attachments',
+						false,
+						[ 'aria-describedby' => 'submit-with-attachments-gloss' ]
+					);
+					?>
+				</div>
+
+				<div id="submit-with-attachments-gloss">
+					<?php if ( $exceeds_max ) : ?>
+						<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site. Because it contains all media files, it can be imported to a new site even when the current site is no longer available; but the zip file may be too large to import into certain WordPress installations.', 'openlab-import-export' ); ?>
+					<?php else : ?>
+						<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site.', 'openlab-import-export' ); ?>
+					<?php endif; ?>
+				</div>
+			</li>
+
+			<li class="archive-download-type">
+				<div class="archive-download-type-button">
+					<?php
+					submit_button(
+						__( 'Download Archive without Attachments (<1 MB)', 'openlab-import-export' ),
+						'primary large',
+						'submit-without-attachments',
+						false,
+						[ 'aria-describedby' => 'submit-without-attachments-gloss' ]
+					);
+					?>
+				</div>
+
+				<div id="submit-without-attachments-gloss">
+					<?php esc_html_e( '"Archive without Attachments" does not include any attached images or other media files. When importing this archive to a new site, the importer will attempt to download attached files from the current site (requiring the current site to be publicly available). This archive format is useful if your site contains a large amount of media, such that the archive file containing attachments is too large to upload.', 'openlab-import-export' ); ?>
+				</div>
+			</li>
+		</ul>
+
+
 	</form>
 </div>

@@ -54,6 +54,13 @@ class Exporter {
 	protected $readme_text;
 
 	/**
+	 * Whether attachments will be included in the current export.
+	 *
+	 * @var bool
+	 */
+	public $include_attachments = false;
+
+	/**
 	 * Cached value of `wp_upload_dir()`.
 	 *
 	 * @var array
@@ -145,6 +152,20 @@ class Exporter {
 	}
 
 	/**
+	 * Set or check whether the current export should include attachments.
+	 *
+	 * @param bool|null Pass a boolean to set the value.
+	 * @return bool
+	 */
+	public function include_attachments( $include = null ) {
+		if ( null !== $include ) {
+			$this->include_attachments = (bool) $include;
+		}
+
+		return (bool) $this->include_attachments;
+	}
+
+	/**
 	 * Create export destination.
 	 *
 	 * @return \WP_Error|bool
@@ -207,6 +228,10 @@ class Exporter {
 	 * @return \WP_Error|void
 	 */
 	protected function prepare_files( $folder ) {
+		if ( ! $this->include_attachments() ) {
+			return;
+		}
+
 		$folder = trailingslashit( $folder );
 
 		if ( ! is_dir( $folder ) ) {
@@ -451,7 +476,8 @@ class Exporter {
 	protected function filename() {
 		$stripped_url = sanitize_title_with_dashes( get_bloginfo( 'name' ) );
 		$timestamp    = date( 'Y-m-d' );
-		$filename     = "export-{$stripped_url}-{$timestamp}.zip";
+		$attachments  = $this->include_attachments() ? 'with-attachments' : 'without-attachments';
+		$filename     = "export-{$stripped_url}-{$attachments}-{$timestamp}.zip";
 
 		return $filename;
 	}

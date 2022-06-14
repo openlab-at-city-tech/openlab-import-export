@@ -25,3 +25,18 @@ body.js .export-filters.show-options {
 .export-author .select2-container .select2-search--inline .select2-search__field {
 	margin-top: 0;
 }
+
+.archive-download-type {
+	border-bottom: 1px solid #ccc;
+	display: flex;
+	gap: 30px;
+	padding: 15px 0;
+}
+
+.archive-download-type:last-of-type {
+	border-bottom: none;
+}
+
+.archive-download-type-button {
+	flex: 0 1 30%;
+}

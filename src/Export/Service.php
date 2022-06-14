@@ -62,6 +62,10 @@ class Service implements Registerable {
 
 		$exporter = new Exporter( wp_get_upload_dir() );
 
+		// Determine whether to include attachments.
+		$include_attachments = ! empty( $_POST['submit-with-attachments'] );
+		$exporter->include_attachments( $include_attachments );
+
 		// 'all' falls through and is handled in WXP.
 		if ( isset( $_POST['post-types'] ) ) {
 			$post_types = wp_unslash( $_POST['post-types'] );
