@@ -87,7 +87,7 @@
 
 		<h2><?php esc_html_e( 'Acknowledgements', 'openlab-import-export' ); ?></h2>
 
-		<p id="acknowledgements-description"><?php esc_html_e( 'The text below will be included on an acknowledgments page which is added to the export file and will appear on any site that imports your site’s contents. You can edit the acknowledgments below, if necessary.', 'openlab-import-export' ); ?></p>
+		<p id="acknowledgements-description"><?php esc_html_e( 'The text below will be included on an acknowledgments page which is added to the export file and will appear in draft form on any site that imports your site’s contents. You can edit the acknowledgments below, if necessary.', 'openlab-import-export' ); ?></p>
 
 		<label for="acknowledgements-text" class="screen-reader-text"><?php esc_html_e( 'Acknowledgments text', 'openlab-import-export' ); ?></label>
 
