@@ -194,7 +194,7 @@ class Exporter {
 			[
 				'post_type'    => 'page',
 				'post_name'    => 'acknowledgements',
-				'post_status'  => 'publish',
+				'post_status'  => 'draft',
 				'post_title'   => __( 'Acknowledgements', 'openlab-import-export' ),
 				'post_content' => $this->acknowledgements_text,
 			]
