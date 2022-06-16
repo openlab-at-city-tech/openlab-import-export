@@ -9,7 +9,7 @@ $r = array_merge(
 );
 ?>
 
-<p><label><input class="post-type-toggle" type="checkbox" name="post-types[]" value="<?php echo esc_attr( $r['post_type'] ); ?>" /> <?php echo esc_html( $r['label'] ); ?></label></p>
+<p><label><input id="toggle-<?php echo esc_attr( $r['post_type'] ); ?>" class="content-type-toggle post-type-toggle" type="checkbox" name="post-types[]" value="<?php echo esc_attr( $r['post_type'] ); ?>" /> <?php echo esc_html( $r['label'] ); ?></label></p>
 
 <?php if ( ! empty( $r['options'] ) ) : ?>
 	<ul id="<?php echo esc_attr( $r['post_type'] ); ?>-filters" class="export-filters">

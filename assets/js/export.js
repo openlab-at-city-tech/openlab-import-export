@@ -1,11 +1,23 @@
 (function($){
+	var $archiveWithAttachmentsRow, $checkboxAllContent, $checkboxMedia;
+
 	$(document).ready(function(){
+		$archiveWithAttachmentsRow = $( '#archive-download-type-with-attachments' );
+		$checkboxAllContent = $( '#all-content' );
+		$checkboxMedia = $( '#toggle-attachment' );
+
+		initDownloadButtons();
+
 		var form = $( '#export-site' ),
 		  $allContent = $( '#all-content' ),
 			previouslyCheckedPostTypes = [];
 
 		form.find( '.post-type-toggle' ).on( 'change', function() {
 			toggleOptions( $(this).val() );
+		});
+
+		form.find( '.content-type-toggle' ).on( 'change', function() {
+			initDownloadButtons();
 		});
 
 		$('.use-select2').select2().val(['0']).trigger('change');
@@ -49,6 +61,20 @@
 			$toggleFilters.addClass( 'show-options' );
 		} else {
 			$toggleFilters.removeClass( 'show-options' );
+		}
+	}
+
+	function initDownloadButtons() {
+		var allowDownloadWithAttachments = $checkboxAllContent.is( ':checked' ) || $checkboxMedia.is( ':checked' );
+
+		if ( allowDownloadWithAttachments ) {
+			$archiveWithAttachmentsRow
+				.removeClass( 'disabled-row' )
+				.find( 'input[type="submit"]' ).attr( 'disabled', false );
+		} else {
+			$archiveWithAttachmentsRow
+				.addClass( 'disabled-row' )
+				.find( 'input[type="submit"]' ).attr( 'disabled', true );
 		}
 	}
 }(jQuery));

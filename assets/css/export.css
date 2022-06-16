@@ -40,3 +40,18 @@ body.js .export-filters.show-options {
 .archive-download-type-button {
 	flex: 0 1 30%;
 }
+
+.submit-disabled-gloss {
+	display: none;
+	font-style: italic;
+	visibility: hidden;
+}
+
+.disabled-row .submit-disabled-gloss {
+	display: block;
+	visibility: visible;
+}
+
+.disabled-row .submit-gloss {
+	opacity: .25;
+}

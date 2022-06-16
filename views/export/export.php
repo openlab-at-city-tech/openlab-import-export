@@ -11,7 +11,7 @@
 		<fieldset>
 			<legend class="screen-reader-text"><?php esc_html_e( 'Content to export', 'openlab-import-export' ); ?></legend>
 
-			<p><label><input id="all-content" type="checkbox" name="post-types[]" value="all"  aria-describedby="all-content-desc" /> <?php esc_html_e( 'All content', 'openlab-import-export' ); ?></label></p>
+			<p><label><input id="all-content" class="content-type-toggle" type="checkbox" name="post-types[]" value="all"  aria-describedby="all-content-desc" checked="checked" /> <?php esc_html_e( 'All content', 'openlab-import-export' ); ?></label></p>
 			<p class="description" id="all-content-desc"><?php esc_html_e( 'Choosing &#8216;All content&#8217; will include all of your posts, pages, comments, custom fields, terms, navigation menus, and custom posts. Below you can limit what is included in the export.', 'openlab-import-export' ); ?></p>
 
 
@@ -118,7 +118,7 @@
 		<p><?php esc_html_e( 'Two versions of the archive file are available. You may choose to download one or both, depending on your needs.', 'openlab-import-export' ); ?></p>
 
 		<ul>
-			<li class="archive-download-type">
+			<li class="archive-download-type" id="archive-download-type-with-attachments">
 				<div class="archive-download-type-button">
 					<?php
 					submit_button(
@@ -132,12 +132,18 @@
 					?>
 				</div>
 
-				<div id="submit-with-attachments-gloss">
-					<?php if ( $exceeds_max ) : ?>
-						<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site. Because it contains all media files, it can be imported to a new site even when the current site is no longer available; but the zip file may be too large to import into certain WordPress installations.', 'openlab-import-export' ); ?>
-					<?php else : ?>
-						<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site.', 'openlab-import-export' ); ?>
-					<?php endif; ?>
+				<div>
+					<div class="submit-gloss" id="submit-with-attachments-gloss">
+						<?php if ( $exceeds_max ) : ?>
+							<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site. Because it contains all media files, it can be imported to a new site even when the current site is no longer available; but the zip file may be too large to import into certain WordPress installations.', 'openlab-import-export' ); ?>
+						<?php else : ?>
+							<?php esc_html_e( 'Includes all image and other media files uploaded to the selected content. This archive is complete and fully self-contained, and is appropriate for long-term archiving of your site.', 'openlab-import-export' ); ?>
+						<?php endif; ?>
+					</div>
+
+					<p class="submit-disabled-gloss" id="submit-with-attachments-disabled-gloss">
+						<?php esc_html_e( 'An archive can only be generated with attachments when either the "All Content" or "Media" option has been checked', 'openlab-import-export' ); ?>
+					</p>
 				</div>
 			</li>
 
