@@ -109,7 +109,7 @@
 		 *
 		 * @param int
 		 */
-		$max_recommended_size = apply_filters( 'openlab_import_export_max_recommended_size_for_exported_attachments', 10 );
+		$max_recommended_size = apply_filters( 'openlab_import_export_max_recommended_size_for_exported_attachments', 25 );
 
 		$exceeds_max = $space_used > $max_recommended_size;
 
