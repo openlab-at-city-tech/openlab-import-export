@@ -38,7 +38,7 @@ body.js .export-filters.show-options {
 }
 
 .archive-download-type-button {
-	flex: 0 1 30%;
+	flex: 0 0 30%;
 }
 
 .submit-disabled-gloss {
