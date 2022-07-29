@@ -64,7 +64,20 @@
 				'objects'
 			);
 
+			$internal_post_types = [
+				'cboxol_acad_term',
+				'cboxol_acadunit',
+				'cboxol_acadunit_type',
+				'cboxol_group_type',
+				'cboxol_member_type',
+				'cboxol_signup_code',
+			];
+
 			foreach ( $other_post_types as $post_type ) {
+				if ( in_array( $post_type->name, $internal_post_types, true ) ) {
+					continue;
+				}
+
 				$post_type_args = [
 					'post_type' => $post_type->name,
 					'label'     => $post_type->label,
