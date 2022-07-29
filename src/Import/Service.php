@@ -85,9 +85,11 @@ class Service implements Registerable {
 			'20190808'
 		);
 
+		$import_id = isset( $_POST['import_id'] ) ? intval( $_POST['import_id'] ) : 0;
+
 		$args = [
 			'action' => 'openlab-import-export-import',
-			'id'     => (int) $_POST['import_id'],
+			'id'     => $import_id,
 		];
 
 		$max_upload_size = wp_max_upload_size();
