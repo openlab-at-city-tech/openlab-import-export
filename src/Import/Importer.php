@@ -1060,6 +1060,20 @@ class Importer {
 		}
 
 		if ( ! empty( $post['metadata'] ) ) {
+			/*
+			 * Thumbnail filenames may have had suffixes appended.
+			 *
+			 * See wp_unique_filename and https://core.trac.wordpress.org/ticket/42437
+			 */
+			if ( ! empty( $upload['sizes'] ) ) {
+				foreach ( $upload['sizes'] as $size => $thumb ) {
+					if ( ! empty( $post['metadata']['sizes'][ $size ] ) ) {
+						$post['metadata']['sizes'][ $size ]['original_file'] = $post['metadata']['sizes'][ $size ]['file'];
+						$post['metadata']['sizes'][ $size ]['file']          = basename( $thumb['file'] );
+					}
+				}
+			}
+
 			wp_update_attachment_metadata( $post_id, $post['metadata'] );
 		}
 
@@ -1077,8 +1091,11 @@ class Importer {
 			$name = basename( $upload['url'] );
 
 			foreach ( $post['metadata']['sizes'] as $size => $data ) {
+
+				$original_filename = isset( $data['original_file'] ) ? $data['original_file'] : $data['file'];
+
+				$remote = str_replace( $name, $original_filename, $remote_url );
 				$local  = str_replace( $name, $data['file'], $upload['url'] );
-				$remote = str_replace( $name, $data['file'], $remote_url );
 
 				$this->url_remap[ $remote ] = $local;
 			}
@@ -1803,6 +1820,7 @@ class Importer {
 
 		// Copy thumbnails.
 		if ( ! empty( $post['metadata']['sizes'] ) ) {
+			$upload['sizes'] = [];
 			foreach ( $post['metadata']['sizes'] as $size => $data ) {
 				$path = str_replace( $name, $data['file'], $filename );
 				$file = str_replace( $name, $data['file'], $upload['file'] );
@@ -1812,8 +1830,12 @@ class Importer {
 					continue;
 				}
 
-				$bits = file_get_contents( $path );
-				wp_upload_bits( $data['file'], 0, $bits, $post['upload_date'] );
+				$bits  = file_get_contents( $path );
+				$thumb = wp_upload_bits( $data['file'], 0, $bits, $post['upload_date'] );
+
+				if ( ! is_wp_error( $thumb ) ) {
+					$upload['sizes'][ $size ] = $thumb;
+				}
 			}
 		}
 
