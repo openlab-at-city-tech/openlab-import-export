@@ -990,6 +990,7 @@ class Importer {
 			return new WP_Error( 'import_file_error', $message );
 		}
 
+		// As a precaution, allow WP to generate thumbnails. This may overwrite imported items.
 		wp_create_image_subsizes( $upload['file'], $post['import_id'] );
 
 		return $upload;
@@ -1072,6 +1073,20 @@ class Importer {
 					if ( ! empty( $post['metadata']['sizes'][ $size ] ) ) {
 						$post['metadata']['sizes'][ $size ]['original_file'] = $post['metadata']['sizes'][ $size ]['file'];
 						$post['metadata']['sizes'][ $size ]['file']          = basename( $thumb['file'] );
+					}
+				}
+			} elseif ( 'remote' === $this->options['attachment_mode'] ) {
+				if ( ! empty( $post['metadata']['sizes'] ) ) {
+					$file_dirname = dirname( $remote_url );
+					foreach ( $post['metadata']['sizes'] as $size => $thumb ) {
+						$remote_thumb_url = trailingslashit( $file_dirname ) . $thumb['file'];
+						$fetched_thumb    = $this->fetch_remote_file( $remote_thumb_url, $post );
+
+
+						if ( ! is_wp_error( $fetched_thumb ) ) {
+							$post['metadata']['sizes'][ $size ]['original_file'] = $remote_thumb_url;
+							$post['metadata']['sizes'][ $size ]['file']          = basename( $fetched_thumb['file'] );
+						}
 					}
 				}
 			}
