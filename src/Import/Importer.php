@@ -990,6 +990,8 @@ class Importer {
 			return new WP_Error( 'import_file_error', $message );
 		}
 
+		wp_create_image_subsizes( $upload['file'], $post['import_id'] );
+
 		return $upload;
 	}
 
