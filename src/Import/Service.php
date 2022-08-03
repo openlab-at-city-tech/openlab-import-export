@@ -199,7 +199,7 @@ class Service implements Registerable {
 
 		$import_id = (int) $args['import_id'];
 
-		$attachment_mode = ! empty( $args['archive-has-attachments'] ) ? 'archive' : 'skip';
+		$attachment_mode = ! empty( $args['archive-has-attachments'] ) ? 'archive' : 'remote';
 
 		update_post_meta( $import_id, 'attachment_mode', $attachment_mode );
 
