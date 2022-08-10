@@ -1111,7 +1111,7 @@ class Importer {
 
 				$original_filename = isset( $data['original_file'] ) ? $data['original_file'] : $data['file'];
 
-				$remote = str_replace( $name, $original_filename, $remote_url );
+				$remote = str_replace( basename( $remote_url ), $original_filename, $remote_url );
 				$local  = str_replace( $name, $data['file'], $upload['url'] );
 
 				$this->url_remap[ $remote ] = $local;
@@ -1839,8 +1839,8 @@ class Importer {
 		if ( ! empty( $post['metadata']['sizes'] ) ) {
 			$upload['sizes'] = [];
 			foreach ( $post['metadata']['sizes'] as $size => $data ) {
-				$path = str_replace( $name, $data['file'], $filename );
-				$file = str_replace( $name, $data['file'], $upload['file'] );
+				$path = str_replace( basename( $upload['file'] ), $data['file'], $filename );
+				$file = str_replace( basename( $upload['file'] ), $data['file'], $upload['file'] );
 
 				// Image size with different names might have same size.
 				if ( file_exists( $file ) ) {
