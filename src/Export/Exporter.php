@@ -104,6 +104,8 @@ class Exporter {
 			return $dest;
 		}
 
+		$this->delete_previous_export_files();
+
 		$this->create_acknowledgements_page();
 
 		$export = $this->create_wxp();
@@ -176,6 +178,25 @@ class Exporter {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Delete previous export files.
+	 *
+	 * Prevents the export directory from getting too large due to aborted exports.
+	 *
+	 * @return void
+	 */
+	protected function delete_previous_export_files() {
+		$files = glob( $this->exports_dir . '*' );
+
+		if ( ! empty( $files ) ) {
+			foreach ( $files as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file );
+				}
+			}
+		}
 	}
 
 	/**
